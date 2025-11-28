@@ -150,8 +150,15 @@
             <div id="buttons">
                 <button class="btn" onclick="startFireworks()">开始烟花</button>
                 <button class="btn" style="margin-left: 10px;" onclick="stopFireworks()">停止烟花</button>
+                <button class="btn" style="margin-left: 10px;" onclick="toggleMusic()">🎵 音乐</button>
             </div>
         </div>
+        
+        <!-- 背景音乐 -->
+        <audio id="backgroundMusic" loop volume="0.3" autoplay>
+            <source src="Diana Boncheva - Beethoven Virus.mp3" type="audio/mpeg">
+            您的浏览器不支持音频元素。
+        </audio>
     
     <div class="info">
         长按保存图片 | 分享给好友
@@ -409,6 +416,57 @@
             // 恢复提示文本
             const contentP = document.querySelector('.content p');
             contentP.textContent = '点击按钮开始烟花表演';
+        }
+        
+        // 控制背景音乐
+        let musicPlaying = false;
+        const backgroundMusic = document.getElementById('backgroundMusic');
+        
+        // 页面加载时尝试自动播放音乐
+        window.addEventListener('load', function() {
+            // 尝试直接播放
+            backgroundMusic.play().then(function() {
+                musicPlaying = true;
+                // 更新按钮文本
+                const musicBtn = document.querySelector('button[onclick="toggleMusic()"]');
+                if (musicBtn) {
+                    musicBtn.textContent = '⏸️ 暂停';
+                }
+            }).catch(function(error) {
+                // 播放失败，可能是因为浏览器自动播放政策
+                console.log('自动播放失败，需要用户交互:', error);
+                musicPlaying = false;
+            });
+        });
+        
+        // 添加用户交互事件监听器，一旦用户交互就自动播放
+        document.addEventListener('click', function() {
+            if (!musicPlaying) {
+                backgroundMusic.play().then(function() {
+                    musicPlaying = true;
+                    // 更新按钮文本
+                    const musicBtn = document.querySelector('button[onclick="toggleMusic()"]');
+                    if (musicBtn) {
+                        musicBtn.textContent = '⏸️ 暂停';
+                    }
+                }).catch(function(error) {
+                    console.log('播放失败:', error);
+                });
+            }
+        }, { once: true });
+        
+        function toggleMusic() {
+            if (musicPlaying) {
+                backgroundMusic.pause();
+                musicPlaying = false;
+                // 更新按钮文本
+                event.target.textContent = '🎵 音乐';
+            } else {
+                backgroundMusic.play();
+                musicPlaying = true;
+                // 更新按钮文本
+                event.target.textContent = '⏸️ 暂停';
+            }
         }
         
         // 自动开始烟花（注释掉，让用户手动点击开始）
